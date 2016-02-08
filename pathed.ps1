@@ -64,6 +64,8 @@ switch ($command.ToLower())
     }
 }
 
+$validPaths = $validPaths | select -uniq
+
 switch($env.ToLower())
 {
     "machine" {
