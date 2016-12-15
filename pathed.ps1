@@ -13,24 +13,37 @@ switch ($command.ToLower())
 {
 
     "check"{
-        if ($validPaths.Contains($path)) {
-            Write-Host "Current location IS present in PATH"
+        if ($validPaths -Contains $path) {
+            Write-Host "Path IS present in PATH"
         } else {
-            Write-Host "Current location IS NOT present in PATH"
+            Write-Host "Path IS NOT present in PATH"
         }
      }
 
-    "add" {
-        if ((Test-Path $path) -and (-Not ($validPaths.Contains($path)))) {
+    "append"{
+        if ((Test-Path $path) -and (-Not ($validPaths -Contains $path))) {
             $validPaths+=$path
-            Write-Host "Added $path"
+            Write-Host "Appended $path"
+        } else {
+            Write-Host "Did not append $path"
         }
      }
+
+    "prepend"{
+        if ((Test-Path $path) -and (-Not ($validPaths -Contains $path))) {
+           $validPaths = $path + $validPaths
+           Write-Host "Prepended $path"
+        } else {
+            Write-Host "Did not prepend $path"
+        }
+    }
 
     "remove"{
-        if ($validPaths.Contains($path)) {
+        if ($validPaths -Contains $path) {
             $validPaths=$validPaths -ne $path
             Write-Host "Removed $path"
+        } else {
+            Write-Host "Did not remove $path"
         }
      }
 
@@ -51,7 +64,9 @@ switch ($command.ToLower())
     }
 }
 
-switch($env)
+$validPaths = $validPaths | select -uniq
+
+switch($env.ToLower())
 {
     "machine" {
         [environment]::SetEnvironmentVariable("PATH", [String]::Join(";", $validPaths), "Machine")
